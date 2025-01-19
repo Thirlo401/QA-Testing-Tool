@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QA Testing Tool</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.2/axios.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:disabled {
+            background-color: #cccccc;
+        }
+        .status {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .error {
+            background-color: #ffebee;
+            color: #c62828;
+        }
+        .success {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>QA Testing Tool</h1>
+        <div class="form-group">
+            <label for="url">Target Website URL:</label>
+            <input type="text" id="url" placeholder="https://example.com">
+        </div>
+        <button onclick="generateScript()" id="generateBtn">Generate Cypress Script</button>
+        <div id="status" class="status" style="display: none;"></div>
+    </div>
+
+    <script>
+        async function generateScript() {
+            const urlInput = document.getElementById('url');
+            const generateBtn = document.getElementById('generateBtn');
+            const statusDiv = document.getElementById('status');
+            
+            // Basic validation
+            if (!urlInput.value) {
+                showStatus('Please enter a valid URL', 'error');
+                return;
+            }
+
+            generateBtn.disabled = true;
+            showStatus('Generating script...', 'info');
+
+            try {
+                // Generate script
+                const response = await axios.post('/api/generate', {
+                    url: urlInput.value
+                });
+
+                // Download generated file
+                const downloadUrl = `/api/download/${response.data.filename}`;
+                window.location.href = downloadUrl;
+                
+                showStatus('Script generated successfully! Downloading...', 'success');
+            } catch (error) {
+                showStatus(error.response?.data?.error || 'An error occurred', 'error');
+            } finally {
+                generateBtn.disabled = false;
+            }
+        }
+
+        function showStatus(message, type) {
+            const statusDiv = document.getElementById('status');
+            statusDiv.textContent = message;
+            statusDiv.style.display = 'block';
+            statusDiv.className = `status ${type}`;
+        }
+    </script>
+</body>
+</html>
