@@ -3,100 +3,426 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QA Testing Tool</title>
+    <title>Thirlo - QA Tester Portfolio</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.2/axios.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.2/ace.js"></script>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f5f5f5;
+        :root {
+            --primary-color: #6366F1;
+            --primary-hover: #4F46E5;
+            --background-color: #0F172A;
+            --surface-color: #1E293B;
+            --text-color: #F8FAFC;
+            --text-muted: #94A3B8;
+            --success-color: #10B981;
+            --error-color: #EF4444;
+            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
         }
-        .container {
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .form-group {
-            margin-bottom: 20px;
-        }
-        input[type="text"] {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
+
+        * {
+            margin: 0;
+            padding: 0;
             box-sizing: border-box;
         }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .portfolio-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .profile-card {
+            background-color: var(--surface-color);
+            border-radius: 1.5rem;
+            padding: 3rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--card-shadow);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 3rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .profile-image {
+            width: 180px;
+            height: 180px;
+            border-radius: 1.5rem;
+            object-fit: cover;
+            border: 4px solid var(--primary-color);
+            box-shadow: var(--card-shadow);
+        }
+
+        .profile-info h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(to right, var(--primary-color), #8B5CF6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .profile-info h2 {
+            font-size: 1.5rem;
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .social-links a {
+            color: var(--text-color);
+            text-decoration: none;
+            padding: 0.75rem 1.5rem;
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid var(--primary-color);
+            border-radius: 1rem;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .social-links a:hover {
+            background: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        .qa-tool-section {
+            background-color: var(--surface-color);
+            border-radius: 1.5rem;
+            padding: 3rem;
+            margin-top: 2rem;
+            box-shadow: var(--card-shadow);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .qa-tool-section h2 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(to right, var(--primary-color), #8B5CF6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .qa-tool-section p {
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 2rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.75rem;
+            font-weight: 500;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 1rem 1.25rem;
+            border: 2px solid rgba(99, 102, 241, 0.2);
+            border-radius: 1rem;
+            background-color: rgba(99, 102, 241, 0.1);
+            color: var(--text-color);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+        }
+
+        .editor-container {
+            margin-top: 2rem;
+            border-radius: 1rem;
+            overflow: hidden;
+            display: none;
+            background: #1A1A1A;
+            box-shadow: var(--card-shadow);
+        }
+
+        #editor {
+            width: 100%;
+            height: 500px;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 14px;
+        }
+
+        .editor-header {
+            background: #2D2D2D;
+            padding: 0.75rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .editor-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #FF5F56;
+        }
+
+        .editor-dot:nth-child(2) {
+            background: #FFBD2E;
+        }
+
+        .editor-dot:nth-child(3) {
+            background: #27C93F;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
         button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 20px;
+            padding: 0.75rem 1.5rem;
             border: none;
-            border-radius: 4px;
+            border-radius: 1rem;
+            font-weight: 500;
             cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1rem;
         }
+
         button:disabled {
-            background-color: #cccccc;
+            opacity: 0.7;
+            cursor: not-allowed;
         }
+
+        #generateBtn {
+            background: linear-gradient(to right, var(--primary-color), #8B5CF6);
+            color: white;
+        }
+
+        #generateBtn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+        }
+
+        .copy-button {
+            background: rgba(99, 102, 241, 0.1);
+            color: var(--text-color);
+            border: 1px solid var(--primary-color);
+        }
+
+        .copy-button:hover {
+            background: rgba(99, 102, 241, 0.2);
+        }
+
+        #downloadBtn {
+            background: var(--success-color);
+            color: white;
+        }
+
+        #downloadBtn:hover {
+            background: #059669;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
         .status {
-            margin-top: 20px;
-            padding: 10px;
-            border-radius: 4px;
+            margin-top: 1.5rem;
+            padding: 1rem 1.5rem;
+            border-radius: 1rem;
+            font-weight: 500;
+            animation: fadeIn 0.3s ease-in-out;
         }
-        .error {
-            background-color: #ffebee;
-            color: #c62828;
+
+        .status.error {
+            background: rgba(239, 68, 68, 0.1);
+            color: #FCA5A5;
+            border: 1px solid rgba(239, 68, 68, 0.2);
         }
-        .success {
-            background-color: #e8f5e9;
-            color: #2e7d32;
+
+        .status.success {
+            background: rgba(16, 185, 129, 0.1);
+            color: #6EE7B7;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+                gap: 1.5rem;
+            }
+
+            .social-links {
+                justify-content: center;
+            }
+
+            .portfolio-container {
+                padding: 1rem;
+            }
+
+            .profile-card, .qa-tool-section {
+                padding: 1.5rem;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>QA Testing Tool</h1>
-        <div class="form-group">
-            <label for="url">Target Website URL:</label>
-            <input type="text" id="url" placeholder="https://example.com">
+    <div class="portfolio-container">
+        <div class="profile-card">
+            <div class="profile-header">
+                <img src="static/images/IMG_0069.jpg" alt="Thirlo" class="profile-image">
+                <div class="profile-info">
+                    <h1>Thirlo</h1>
+                    <h2>QA Engineer & Test Automation Specialist</h2>
+                    <div class="social-links">
+                        <a href="https://www.linkedin.com/in/thirlo-fredericks-80b27a136/" target="_blank">LinkedIn</a>
+                        <a href="https://github.com/Thirlo401/" target="_blank">GitHub</a>
+                        <a href="/files/resume-cv.pdf" target="_blank">Download CV</a>
+                    </div>
+                </div>
+            </div>
+            <div class="about-section">
+                <p>With extensive experience in web and mobile app development and digital marketing across B2B and e-commerce sectors, I now specialize in software testing and quality assurance. My approach combines technical expertise with user-centric thinking to ensure exceptional product quality and user experiences.</p>
+            </div>
         </div>
-        <button onclick="generateScript()" id="generateBtn">Generate Cypress Script</button>
-        <div id="status" class="status" style="display: none;"></div>
+
+        <div class="qa-tool-section">
+            <h2>Cypress Test Generator</h2>
+            <p>Generate comprehensive Cypress test scripts for any web application instantly. Simply enter the URL below and let the magic happen.</p>
+            
+            <div class="form-group">
+                <label for="url">Website URL</label>
+                <input type="text" id="url" placeholder="https://example.com">
+            </div>
+            
+            <button onclick="generateScript()" id="generateBtn">
+                <span>Generate Test Script</span>
+            </button>
+
+            <div class="editor-container" id="editorContainer">
+                <div class="editor-header">
+                    <div class="editor-dot"></div>
+                    <div class="editor-dot"></div>
+                    <div class="editor-dot"></div>
+                </div>
+                <div id="editor"></div>
+                <div class="action-buttons">
+                    <button onclick="copyToClipboard()" class="copy-button">
+                        <span>Copy to Clipboard</span>
+                    </button>
+                    <button onclick="downloadScript()" id="downloadBtn">
+                        <span>Download Script</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div id="status" class="status" style="display: none;"></div>
+        </div>
     </div>
 
     <script>
+        // JavaScript remains the same as in the previous version
+        let editor;
+        document.addEventListener('DOMContentLoaded', () => {
+            editor = ace.edit("editor");
+            editor.setTheme("ace/theme/monokai");
+            editor.session.setMode("ace/mode/javascript");
+            editor.setOptions({
+                fontSize: "14px",
+                showPrintMargin: false,
+                readOnly: true,
+                fontFamily: "'JetBrains Mono', 'Fira Code', monospace"
+            });
+        });
+
         async function generateScript() {
             const urlInput = document.getElementById('url');
             const generateBtn = document.getElementById('generateBtn');
-            const statusDiv = document.getElementById('status');
+            const editorContainer = document.getElementById('editorContainer');
             
-            // Basic validation
             if (!urlInput.value) {
                 showStatus('Please enter a valid URL', 'error');
                 return;
             }
 
             generateBtn.disabled = true;
-            showStatus('Generating script...', 'info');
+            generateBtn.innerHTML = '<span>Generating</span><span class="loading-spinner"></span>';
+            showStatus('Generating your test script...', 'info');
 
             try {
-                // Generate script
                 const response = await axios.post('/api/generate', {
                     url: urlInput.value
                 });
 
-                // Download generated file
-                const downloadUrl = `/api/download/${response.data.filename}`;
-                window.location.href = downloadUrl;
+                editorContainer.style.display = 'block';
+                editor.setValue(response.data.script);
+                editor.clearSelection();
                 
-                showStatus('Script generated successfully! Downloading...', 'success');
+                showStatus('Script generated successfully! ✨', 'success');
             } catch (error) {
-                showStatus(error.response?.data?.error || 'An error occurred', 'error');
+                showStatus(error.response?.data?.error || 'An error occurred while generating the script', 'error');
             } finally {
                 generateBtn.disabled = false;
+                generateBtn.innerHTML = '<span>Generate Test Script</span>';
             }
+        }
+
+        async function copyToClipboard() {
+            try {
+                await navigator.clipboard.writeText(editor.getValue());
+                showStatus('Script copied to clipboard! 📋', 'success');
+            } catch (err) {
+                showStatus('Failed to copy script', 'error');
+            }
+        }
+
+        function downloadScript() {
+            const script = editor.getValue();
+            const blob = new Blob([script], { type: 'text/javascript' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'cypress-test.js';
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+            showStatus('Script downloaded successfully! 🎉', 'success');
         }
 
         function showStatus(message, type) {
