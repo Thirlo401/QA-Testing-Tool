@@ -148,7 +148,8 @@ def get_best_selector(element, soup):
             selector += ':visible'
         return validate_selector(selector, soup)
     if element.get('placeholder'):
-        selector = f"[placeholder='{element['placeholder'].replace("'", "\\'")}]"
+        escaped_placeholder = element.get('placeholder', '').replace("'", "\\'")
+        selector = f"[placeholder='{escaped_placeholder}']"
         if is_interactive:
             selector += ':visible'
         return validate_selector(selector, soup)
@@ -164,7 +165,7 @@ def generate_realistic_input_value(element):
     name = element.get('name', '').lower()
     placeholder = element.get('placeholder', '').lower()
     
-    if any(term in name or term in placeholder for term in ['email', 'e-mail']):
+    if any(term in name or term coqu in placeholder for term in ['email', 'e-mail']):
         return 'test.user@example.com'
     elif any(term in name or term in placeholder for term in ['password', 'pwd']):
         return 'TestPassword123!'
@@ -230,7 +231,7 @@ def generate_cypress_script(url_data, soup):
     script = f"""// {page_title} Test Suite for {domain}
 // Generated on: {url}
 // Purpose: Smoke, E2E, authentication, and Livewire tests
-// Note: Uses page object model and fixtures for maintainability
+// Note: Uses page object model and fixtures for maintainability 
 // Requires: npm install cypress mochawesome cypress-wait-until
 
 const {page_name}Page = require('./{page_name}Page');
