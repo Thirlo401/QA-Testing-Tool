@@ -1,15 +1,17 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thirlo - QA Tester Portfolio</title>
+    <title>Thirlo - QA Engineer & AI Portfolio</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.2/axios.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.2/ace.js"></script>
     <script src="https://unpkg.com/feather-icons"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        /* Existing styles remain unchanged */
         :root {
-            /* Apple-inspired light mode palette */
             --background: #F5F5F7;
             --card: #FFFFFF;
             --text: #1D1D1F;
@@ -18,9 +20,9 @@
             --success: #34C759;
             --error: #FF3B30;
             --border: #E8ECEF;
+            --highlight: rgba(0, 122, 255, 0.1);
         }
 
-        /* Dark mode palette */
         [data-theme="dark"] {
             --background: #1C1C1E;
             --card: #2C2C2E;
@@ -30,6 +32,7 @@
             --success: #30D158;
             --error: #FF453A;
             --border: #3A3A3C;
+            --highlight: rgba(10, 132, 255, 0.1);
         }
 
         * {
@@ -52,18 +55,35 @@
             min-height: 100vh;
         }
 
-        /* Sidebar Navigation */
         .sidebar {
-            width: 200px;
+            width: 260px;
             background-color: var(--card);
             border-right: 1px solid var(--border);
-            padding: 2rem 1rem;
+            padding: 1.5rem;
             position: fixed;
             height: 100vh;
             display: flex;
             flex-direction: column;
-            gap: 1rem;
+            gap: 0.5rem;
             z-index: 1000;
+        }
+
+        .sidebar-header {
+            padding: 1rem 0;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .sidebar-header h1 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .sidebar-header h1 i {
+            color: var(--accent);
         }
 
         .sidebar a {
@@ -71,7 +91,7 @@
             text-decoration: none;
             font-weight: 500;
             font-size: 0.95rem;
-            padding: 0.5rem 1rem;
+            padding: 0.75rem 1rem;
             border-radius: 0.5rem;
             transition: all 0.2s ease;
             display: flex;
@@ -80,22 +100,15 @@
         }
 
         .sidebar a:hover, .sidebar a.active {
-            color: var(--accent);
-            background-color: var(--border);
+            color: var(--text);
+            background-color: var(--highlight);
         }
 
-        .sidebar a:hover i, .sidebar a.active i {
-            color: var(--accent);
-        }
-
-        .sidebar i {
-            color: var(--muted);
+        .sidebar a i {
             width: 20px;
             height: 20px;
-            transition: color 0.2s ease;
         }
 
-        /* Hamburger Menu */
         .hamburger {
             display: none;
             position: fixed;
@@ -153,7 +166,6 @@
             height: 20px;
         }
 
-        /* Theme Toggle */
         .theme-toggle {
             position: fixed;
             top: 1rem;
@@ -211,22 +223,19 @@
             opacity: 1;
         }
 
-        /* Main Content */
         .main-content {
-            margin-left: 200px;
-            width: calc(100% - 200px);
+            margin-left: 260px;
+            width: calc(100% - 260px);
+            padding: 2rem;
         }
 
         section {
             padding: 2rem;
-            display: none; /* Hide all sections by default */
+            display: none;
         }
 
-        section.active-section {
-            display: flex; /* Show only the active section */
-            flex-direction: column;
-            align-items: center;
-            padding-top: 2rem; /* Start near the top */
+        section.active {
+            display: block;
         }
 
         .section-content {
@@ -239,7 +248,129 @@
             transition: background-color 0.3s ease, border-color 0.3s ease;
         }
 
-        /* Profile Section */
+        .about-container {
+            max-width: 800px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 4rem);
+        }
+
+        .about-header {
+            margin-bottom: 2rem;
+        }
+
+        .about-header h2 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .about-header p {
+            color: var(--muted);
+        }
+
+        .chat-container {
+            flex-grow: 1;
+            overflow-y: auto;
+            margin-bottom: 1.5rem;
+            padding-right: 0.5rem;
+        }
+
+        .message {
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            border-radius: 0.75rem;
+            background-color: var(--card);
+            border: 1px solid var(--border);
+        }
+
+        .message-user {
+            background-color: var(--highlight);
+            border-color: var(--accent);
+        }
+
+        .message-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .message-header strong {
+            font-weight: 600;
+            margin-right: 0.5rem;
+        }
+
+        .message-header .badge {
+            background-color: var(--accent);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .message-content {
+            line-height: 1.6;
+        }
+
+        .sources {
+            margin-top: 1rem;
+            font-size: 0.875rem;
+            color: var(--muted);
+        }
+
+        .sources a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        .input-container {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+        }
+
+        .search-input {
+            flex-grow: 1;
+            padding: 0.875rem 1.25rem;
+            border-radius: 0.75rem;
+            border: 1px solid var(--border);
+            background-color: var(--card);
+            color: var(--text);
+            font-size: 1rem;
+            transition: all 0.2s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        }
+
+        .search-button {
+            padding: 0 1.5rem;
+            border-radius: 0.75rem;
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .search-button:hover {
+            background-color: #2563eb;
+        }
+
+        .search-button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
         .profile-header {
             display: flex;
             align-items: center;
@@ -294,165 +425,6 @@
             color: var(--text);
         }
 
-        /* CV Section */
-        .cv-section h2 {
-            font-size: 1.75rem;
-            font-weight: 600;
-            color: var(--text);
-            margin-bottom: 1.5rem;
-        }
-
-        .cv-section h3 {
-            font-size: 1.25rem;
-            font-weight: 500;
-            color: var(--text);
-            margin-bottom: 1rem;
-        }
-
-        .cv-entry {
-            margin-bottom: 1.5rem;
-            padding: 1rem;
-            border-left: 3px solid var(--accent);
-            border-radius: 0.25rem;
-        }
-
-        .cv-entry h4 {
-            font-size: 1.1rem;
-            font-weight: 500;
-            color: var(--text);
-            margin-bottom: 0.25rem;
-        }
-
-        .cv-entry .company {
-            color: var(--accent);
-            font-weight: 500;
-            font-size: 0.95rem;
-        }
-
-        .cv-entry .date {
-            color: var(--muted);
-            font-size: 0.9rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .cv-entry p {
-            font-size: 0.95rem;
-            color: var(--text);
-            line-height: 1.5;
-        }
-
-        .cv-links a {
-            color: var(--accent);
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 0.95rem;
-            padding: 0.5rem 1rem;
-            border: 1px solid var(--accent);
-            border-radius: 0.5rem;
-            transition: all 0.2s ease;
-        }
-
-        .cv-links a:hover {
-            background: var(--accent);
-            color: #FFFFFF;
-        }
-
-        /* Skills Section */
-        .skills-section h2 {
-            font-size: 1.75rem;
-            font-weight: 600;
-            color: var(--text);
-            margin-bottom: 1.5rem;
-        }
-
-        .skills-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .skill-logo-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0.5rem;
-            text-align: center;
-            padding: 0.5rem;
-            border-radius: 0.5rem;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            min-width: 100px;
-        }
-
-        .skill-logo-item:hover {
-            transform: scale(1.05);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        .skill-logo {
-            width: 60px;
-            height: 60px;
-            object-fit: contain;
-        }
-
-        .skill-logo-item i {
-            width: 60px;
-            height: 60px;
-            color: var(--text);
-        }
-
-        .skill-logo-item span {
-            font-size: 0.9rem;
-            font-weight: 500;
-            color: var(--text);
-        }
-
-        /* Contact Section */
-        .contact-section h2 {
-            font-size: 1.75rem;
-            font-weight: 600;
-            color: var(--text);
-            margin-bottom: 1.5rem;
-        }
-
-        .contact-section p {
-            font-size: 0.95rem;
-            color: var(--muted);
-            margin-bottom: 2rem;
-        }
-
-        .contact-links {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1rem;
-        }
-
-        .contact-links a {
-            color: var(--accent);
-            text-decoration: none;
-            padding: 0.75rem 1.5rem;
-            border: 1px solid var(--accent);
-            border-radius: 0.5rem;
-            font-size: 0.95rem;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: all 0.2s ease;
-            min-height: 44px; /* WCAG tap target */
-        }
-
-        .contact-links a:hover {
-            background: var(--accent);
-            color: #FFFFFF;
-        }
-
-        .contact-links i {
-            width: 20px;
-            height: 20px;
-        }
-
-        /* Tool Section */
         .tool-section h2 {
             font-size: 1.75rem;
             font-weight: 600;
@@ -486,7 +458,7 @@
             color: var(--text);
             font-size: 0.95rem;
             transition: all 0.2s ease;
-            min-height: 44px; /* WCAG tap target */
+            min-height: 44px;
         }
 
         input[type="text"]:focus {
@@ -551,7 +523,7 @@
             align-items: center;
             gap: 0.4rem;
             font-size: 0.95rem;
-            min-height: 44px; /* WCAG tap target */
+            min-height: 44px;
         }
 
         button:disabled {
@@ -628,14 +600,27 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Media Queries for Mobile Devices */
         @media (max-width: 768px) {
             .container {
                 flex-direction: column;
             }
 
             .sidebar {
-                display: none;
+                width: 100%;
+                height: auto;
+                position: relative;
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+            }
+            
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+            }
+            
+            .about-container {
+                height: auto;
+                min-height: calc(100vh - 8rem);
             }
 
             .hamburger {
@@ -646,14 +631,9 @@
                 display: flex;
             }
 
-            .main-content {
-                margin-left: 0;
-                width: 100%;
-            }
-
-            section.active-section {
+            section.active {
                 padding: 1rem;
-                padding-top: 4rem; /* Account for hamburger menu */
+                padding-top: 4rem;
             }
 
             .section-content {
@@ -680,13 +660,13 @@
                 font-size: 1.1rem;
             }
 
-            .social-links, .cv-links {
+            .social-links {
                 flex-wrap: wrap;
                 justify-content: center;
                 gap: 0.5rem;
             }
 
-            .social-links a, .cv-links a {
+            .social-links a {
                 font-size: 0.85rem;
                 padding: 0.5rem 0.75rem;
             }
@@ -695,50 +675,8 @@
                 font-size: 0.9rem;
             }
 
-            .cv-section h2, .skills-section h2, .tool-section h2, .contact-section h2 {
+            .tool-section h2 {
                 font-size: 1.5rem;
-            }
-
-            .cv-section h3 {
-                font-size: 1.1rem;
-            }
-
-            .cv-entry h4 {
-                font-size: 1rem;
-            }
-
-            .cv-entry .company, .cv-entry .date, .cv-entry p {
-                font-size: 0.85rem;
-            }
-
-            .skills-grid {
-                grid-template-columns: repeat(3, 1fr);
-                gap: 1rem;
-            }
-
-            .skill-logo-item {
-                min-width: 80px;
-                padding: 0.4rem;
-            }
-
-            .skill-logo, .skill-logo-item i {
-                width: 50px;
-                height: 50px;
-            }
-
-            .skill-logo-item span {
-                font-size: 0.85rem;
-            }
-
-            .contact-links {
-                flex-direction: row;
-                justify-content: center;
-                gap: 0.75rem;
-            }
-
-            .contact-links a {
-                font-size: 0.9rem;
-                padding: 0.5rem 1rem;
             }
 
             .tool-section p {
@@ -780,7 +718,7 @@
         }
 
         @media (max-width: 600px) {
-            section.active-section {
+            section.active {
                 padding: 0.75rem;
                 padding-top: 3.5rem;
             }
@@ -802,56 +740,13 @@
                 font-size: 1rem;
             }
 
-            .social-links a, .cv-links a {
+            .social-links a {
                 font-size: 0.8rem;
                 padding: 0.4rem 0.6rem;
             }
 
-            .cv-section h2, .skills-section h2, .tool-section h2, .contact-section h2 {
+            .tool-section h2 {
                 font-size: 1.25rem;
-            }
-
-            .cv-section h3 {
-                font-size: 1rem;
-            }
-
-            .cv-entry h4 {
-                font-size: 0.9rem;
-            }
-
-            .cv-entry .company, .cv-entry .date, .cv-entry p {
-                font-size: 0.8rem;
-            }
-
-            .skills-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 0.75rem;
-            }
-
-            .skill-logo-item {
-                min-width: 70px;
-            }
-
-            .skill-logo, .skill-logo-item i {
-                width: 40px;
-                height: 40px;
-            }
-
-            .skill-logo-item span {
-                font-size: 0.8rem;
-            }
-
-            .contact-links {
-                flex-direction: column;
-                align-items: center;
-            }
-
-            .contact-links a {
-                width: 100%;
-                max-width: 300px;
-                justify-content: center;
-                font-size: 0.85rem;
-                padding: 0.6rem 1rem;
             }
 
             .tool-section p {
@@ -889,19 +784,18 @@
     </div>
 
     <nav class="sidebar">
-        <a href="#home" class="nav-link active"><i data-feather="home"></i>Home</a>
-        <a href="#experience" class="nav-link"><i data-feather="briefcase"></i>Experience</a>
-        <a href="#skills" class="nav-link"><i data-feather="award"></i>Skills</a>
-        <a href="#tool" class="nav-link"><i data-feather="code"></i>Cypress Testing Tool</a>
-        <a href="#contact" class="nav-link"><i data-feather="mail"></i>Contact</a>
+        <div class="sidebar-header">
+            <h1><i data-feather="cpu"></i> Cirriculum Vitae</h1>
+        </div>
+        <a href="#about-me" class="nav-link active"><i data-feather="user"></i>About Me</a>
+        <a href="#profile" class="nav-link"><i data-feather="file-text"></i>Profile</a>
+        <a href="#cypress" class="nav-link"><i data-feather="code"></i>Cypress Generator</a>
     </nav>
 
     <nav class="mobile-menu">
-        <a href="#home" class="nav-link active"><i data-feather="home"></i>Home</a>
-        <a href="#experience" class="nav-link"><i data-feather="briefcase"></i>Experience</a>
-        <a href="#skills" class="nav-link"><i data-feather="award"></i>Skills</a>
-        <a href="#tool" class="nav-link"><i data-feather="code"></i>Cypress Testing Tool</a>
-        <a href="#contact" class="nav-link"><i data-feather="mail"></i>Contact</a>
+        <a href="#about-me" class="nav-link active"><i data-feather="user"></i>About Me</a>
+        <a href="#profile" class="nav-link"><i data-feather="file-text"></i>Profile</a>
+        <a href="#cypress" class="nav-link"><i data-feather="code"></i>Cypress Generator</a>
     </nav>
 
     <div class="theme-toggle" onclick="toggleTheme()">
@@ -910,8 +804,46 @@
     </div>
 
     <div class="container">
-        <div class="main-content">
-            <section id="home" class="active-section">
+        <main class="main-content">
+            <!-- About Me Section (Replaces AI Assistant) -->
+            <section id="about-me" class="section active">
+                <div class="about-container">
+                    <div class="about-header">
+                        <h2>About Me</h2>
+                        <p>Ask my AI assistant about my professional background, skills, or achievements.</p>
+                    </div>
+                    
+                    <div class="chat-container" id="chat-container">
+                        <div class="message message-ai">
+                            <div class="message-header">
+                                <strong>Thirlo's Assistant</strong>
+                                <span class="badge">AI</span>
+                            </div>
+                            <div class="message-content">
+                                <p>Hello! I'm Thirlo's AI assistant, here to answer questions about his professional journey as a QA Engineer. You can ask about:</p>
+                                <ul style="margin-top: 0.5rem; padding-left: 1.25rem;">
+                                    <li>Thirlo's experience with test automation tools like Cypress, Selenium, or Appium</li>
+                                    <li>Key projects or achievements at Cloudpoint Solutions</li>
+                                    <li>His educational background and certifications</li>
+                                    <li>Skills in web/mobile testing, Agile methodologies, or programming</li>
+                                    <li>Anything else relevant to his QA expertise</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="input-container">
+                        <input type="text" class="search-input" id="ai-question" placeholder="Ask about Thirlo's experience or skills...">
+                        <button class="search-button" id="ask-button" onclick="askAI()">
+                            <span>Ask</span>
+                            <i data-feather="send"></i>
+                        </button>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Profile Section (Renamed from About) -->
+            <section id="profile" class="section">
                 <div class="section-content">
                     <div class="profile-header">
                         <img src="static/images/IMG_0069.jpg" alt="Thirlo" class="profile-image">
@@ -927,120 +859,23 @@
                     </div>
                     <div class="about-section">
                         <p>Experienced in web and mobile app development and digital marketing, I specialize in software testing and quality assurance, delivering high-quality products through technical expertise and user-focused testing.</p>
-                    </div>
-                </div>
-            </section>
-
-            <section id="experience">
-                <div class="section-content cv-section">
-                    <h2>Curriculum Vitae</h2>
-                    <h3>Experience</h3>
-                    <div class="cv-entry">
-                        <h4>Intermediate Tester</h4>
-                        <div class="company">Cloudpoint Solutions</div>
-                        <div class="date">2023 – Present</div>
+                        
+                        <h3 style="margin-top: 2rem;">Experience</h3>
+                        <p><strong>Intermediate Tester at Cloudpoint Solutions</strong> (2023–Present)</p>
                         <p>Lead testing for web applications using Cypress and Selenium, cutting defects by 30%. Automate tests for Laravel/Livewire systems and collaborate in Agile teams.</p>
-                    </div>
-                    <div class="cv-entry">
-                        <h4>QA Tester</h4>
-                        <div class="company">Cloudpoint Solutions</div>
-                        <div class="date">2021 – 2023</div>
+                        
+                        <p><strong>QA Tester at Cloudpoint Solutions</strong> (2021–2023)</p>
                         <p>Performed manual and automated testing for web/mobile apps, using Postman and TestRail. Improved testing efficiency and supported Agile adoption.</p>
-                    </div>
-                    <div class="cv-entry">
-                        <h4>Digital Marketing Specialist</h4>
-                        <div class="company">Freelance</div>
-                        <div class="date">2019 – 2021</div>
-                        <p>Executed SEO, PPC, and social media campaigns for B2B/e-commerce clients, boosting ROI by 25%.</p>
-                    </div>
-                    <div class="cv-entry">
-                        <h4>Web Developer</h4>
-                        <div class="company">Freelance</div>
-                        <div class="date">2017 – 2019</div>
-                        <p>Built responsive websites with HTML, CSS, JavaScript, and PHP, integrating APIs and optimizing performance.</p>
-                    </div>
-
-                    <h3>Education & Certifications</h3>
-                    <div class="cv-entry">
-                        <h4>Certified Software Tester (CSTE)</h4>
-                        <div class="company">QAI Global Institute</div>
-                        <div class="date">2022</div>
+                        
+                        <h3 style="margin-top: 2rem;">Education & Certifications</h3>
+                        <p><strong>Certified Software Tester (CSTE)</strong> - QAI Global Institute (2022)</p>
                         <p>Trained in software testing methodologies and best practices.</p>
                     </div>
-                    <div class="cv-entry">
-                        <h4>Diploma in Web Development</h4>
-                        <div class="company">Online Academy</div>
-                        <div class="date">2017</div>
-                        <p>Studied modern web development techniques.</p>
-                    </div>
-
-                    <div class="cv-links">
-                        <a href="/files/resume-cv.pdf" target="_blank">Download CV</a>
-                    </div>
                 </div>
             </section>
-
-            <section id="skills">
-                <div class="section-content skills-section">
-                    <h2>Skills</h2>
-                    <div class="skills-grid">
-                        <div class="skill-logo-item">
-                            <img src="static/images/cypress-logo.png" alt="Cypress" class="skill-logo">
-                            <span>Cypress</span>
-                        </div>
-                        <div class="skill-logo-item">
-                            <img src="static/images/selenium-logo.png" alt="Selenium" class="skill-logo">
-                            <span>Selenium</span>
-                        </div>
-                        <div class="skill-logo-item">
-                            <img src="static/images/postman-logo.png" alt="Postman" class="skill-logo">
-                            <span>Postman</span>
-                        </div>
-                        <div class="skill-logo-item">
-                            <img src="static/images/jira-logo.png" alt="Jira" class="skill-logo">
-                            <span>Jira</span>
-                        </div>
-                        <div class="skill-logo-item">
-                            <img src="static/images/testrail-logo.png" alt="TestRail" class="skill-logo">
-                            <span>TestRail</span>
-                        </div>
-                        <div class="skill-logo-item">
-                            <img src="static/images/laravel-logo.png" alt="Laravel" class="skill-logo">
-                            <span>Laravel</span>
-                        </div>
-                        <div class="skill-logo-item">
-                            <img src="static/images/livewire-logo.png" alt="Livewire" class="skill-logo">
-                            <span>Livewire</span>
-                        </div>
-                        <div class="skill-logo-item">
-                            <img src="static/images/php-logo.png" alt="PHP" class="skill-logo">
-                            <span>PHP</span>
-                        </div>
-                        <div class="skill-logo-item">
-                            <img src="static/images/javascript-logo.png" alt="JavaScript" class="skill-logo">
-                            <span>JavaScript</span>
-                        </div>
-                        <div class="skill-logo-item">
-                            <img src="static/images/html-css-logo.png" alt="HTML/CSS" class="skill-logo">
-                            <span>HTML/CSS</span>
-                        </div>
-                        <div class="skill-logo-item">
-                            <img src="static/images/appium-logo.png" alt="Appium" class="skill-logo">
-                            <span>Appium</span>
-                        </div>
-                        <div class="skill-logo-item">
-                            <i data-feather="trending-up"></i>
-                            <span>Digital Marketing</span>
-                        </div>
-                        <div class="skill-logo-item">
-                            <i data-feather="git-branch"></i>
-                            <span>Agile/Scrum</span>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <section id="tool">
+            
+            <!-- Cypress Tool Section -->
+            <section id="cypress" class="section">
                 <div class="section-content tool-section">
                     <h2>Cypress Test Generator</h2>
                     <p>Generate comprehensive Cypress test scripts for any web application instantly. Simply enter the URL below and let the magic happen.</p>
@@ -1074,78 +909,54 @@
                     <div id="status" class="status" style="display: none;"></div>
                 </div>
             </section>
-
-            <section id="contact">
-                <div class="section-content contact-section">
-                    <h2>Contact Me</h2>
-                    <p>Feel free to reach out via LinkedIn, GitHub, or email for collaborations, inquiries, or opportunities.</p>
-                    <div class="contact-links">
-                        <a href="https://www.linkedin.com/in/thirlo-fredericks-80b27a136/" target="_blank">
-                            <i data-feather="linkedin"></i>LinkedIn
-                        </a>
-                        <a href="https://github.com/Thirlo401/" target="_blank">
-                            <i data-feather="github"></i>GitHub
-                        </a>
-                        <a href="mailto:thirlo@example.com">
-                            <i data-feather="mail"></i>Email
-                        </a>
-                    </div>
-                </div>
-            </section>
-        </div>
+        </main>
     </div>
 
     <script>
         let editor;
         document.addEventListener('DOMContentLoaded', () => {
-            // Initialize Feather Icons
             feather.replace();
-
-            editor = ace.edit("editor");
-            editor.setTheme("ace/theme/monokai");
-            editor.session.setMode("ace/mode/javascript");
-            editor.setOptions({
-                fontSize: "13px",
-                showPrintMargin: false,
-                readOnly: true,
-                fontFamily: "'SF Mono', 'Menlo', monospace"
-            });
-
-            // Navigation handling
+            
+            if (document.getElementById('editor')) {
+                editor = ace.edit("editor");
+                editor.setTheme("ace/theme/monokai");
+                editor.session.setMode("ace/mode/javascript");
+                editor.setOptions({
+                    fontSize: "13px",
+                    showPrintMargin: false,
+                    readOnly: true,
+                    fontFamily: "'SF Mono', 'Menlo', monospace"
+                });
+            }
+            
             const navLinks = document.querySelectorAll('.nav-link');
-            const sections = document.querySelectorAll('section');
-
+            const sections = document.querySelectorAll('.section');
+            
             navLinks.forEach(link => {
                 link.addEventListener('click', (e) => {
                     e.preventDefault();
                     const targetId = link.getAttribute('href').substring(1);
-                    const targetSection = document.getElementById(targetId);
-
-                    // Hide all sections and show the target section
-                    sections.forEach(section => {
-                        section.classList.remove('active-section');
-                    });
-                    targetSection.classList.add('active-section');
-
-                    // Update active link
+                    
                     navLinks.forEach(l => l.classList.remove('active'));
                     link.classList.add('active');
+                    
+                    sections.forEach(section => {
+                        section.classList.remove('active');
+                        if (section.id === targetId) {
+                            section.classList.add('active');
+                        }
+                    });
 
-                    // Close mobile menu if open
-                    const mobileMenu = document.querySelector('.mobile-menu');
-                    mobileMenu.classList.remove('active');
-
-                    // Scroll to top of the section
+                    document.querySelector('.mobile-menu').classList.remove('active');
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                 });
             });
-
-            // Load saved theme preference
+            
             if (localStorage.getItem('theme') === 'dark') {
                 document.documentElement.setAttribute('data-theme', 'dark');
             }
         });
-
+        
         function toggleTheme() {
             const currentTheme = document.documentElement.getAttribute('data-theme');
             if (currentTheme === 'dark') {
@@ -1158,10 +969,89 @@
         }
 
         function toggleMobileMenu() {
-            const mobileMenu = document.querySelector('.mobile-menu');
-            mobileMenu.classList.toggle('active');
+            document.querySelector('.mobile-menu').classList.toggle('active');
         }
-
+        
+        async function askAI() {
+            const question = document.getElementById('ai-question').value;
+            const button = document.getElementById('ask-button');
+            const chat = document.getElementById('chat-container');
+            
+            if (!question) return;
+            
+            chat.innerHTML += `
+                <div class="message message-user">
+                    <div class="message-header">
+                        <strong>You</strong>
+                    </div>
+                    <div class="message-content">
+                        <p>${question}</p>
+                    </div>
+                </div>
+            `;
+            
+            button.disabled = true;
+            button.innerHTML = '<span>Thinking</span><i data-feather="loader"></i>';
+            feather.replace();
+            
+            chat.scrollTop = chat.scrollHeight;
+            
+            try {
+                const response = await axios.post('/api/ask-ai', {
+                    question: question
+                });
+                
+                chat.innerHTML += `
+                    <div class="message message-ai">
+                        <div class="message-header">
+                            <strong>Thirlo's Assistant</strong>
+                            <span class="badge">AI</span>
+                        </div>
+                        <div class="message-content">
+                            <p>${response.data.answer}</p>
+                            ${response.data.sources ? `
+                                <div class="sources">
+                                    <p>Sources:</p>
+                                    <ul>
+                                        ${response.data.sources.map(source => 
+                                            `<li><a href="${source.url}" target="_blank">${source.title}</a></li>`
+                                        ).join('')}
+                                    </ul>
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+                
+                document.getElementById('ai-question').value = '';
+                
+            } catch (error) {
+                console.error('AI error:', error);
+                chat.innerHTML += `
+                    <div class="message message-ai">
+                        <div class="message-header">
+                            <strong>Thirlo's Assistant</strong>
+                            <span class="badge">AI</span>
+                        </div>
+                        <div class="message-content">
+                            <p style="color: var(--error)">Sorry, I encountered an error. Please try again or check my Profile section for more details.</p>
+                        </div>
+                    </div>
+                `;
+            } finally {
+                button.disabled = false;
+                button.innerHTML = '<span>Ask</span><i data-feather="send"></i>';
+                feather.replace();
+                chat.scrollTop = chat.scrollHeight;
+            }
+        }
+        
+        document.getElementById('ai-question').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                askAI();
+            }
+        });
+        
         async function generateScript() {
             const urlInput = document.getElementById('url');
             const generateBtn = document.getElementById('generateBtn');
