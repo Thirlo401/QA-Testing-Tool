@@ -28,4 +28,3 @@ tqdm==4.67.1
 typing_extensions==4.12.2
 urllib3==2.3.0
 Werkzeug==3.0.1
-playwright==1.44.0
