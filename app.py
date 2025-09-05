@@ -1,19 +1,61 @@
 from flask import Flask, request, jsonify, render_template
-import requests
-from bs4 import BeautifulSoup
+from flask_cors import CORS
+from playwright.sync_api import sync_playwright
+import openai
 import os
 import re
 import json
+from bs4 import BeautifulSoup
 from werkzeug.utils import secure_filename
 from urllib.parse import urlparse
-from playwright.sync_api import sync_playwright
 import subprocess
 import uuid
+from datetime import datetime
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder='templates')
 app.config['UPLOAD_FOLDER'] = 'generated_scripts'
-
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+CORS(app)
+
+# Configure OpenAI
+openai.api_key = os.getenv('OPENAI_API_KEY', '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')
+
+# AI Knowledge Base
+ai_knowledge_base = {
+    "about": "Experienced QA Engineer specializing in test automation with a focus on delivering high-quality web and mobile applications through rigorous testing and automation.",
+    "experience": [
+        {
+            "role": "Intermediate Tester",
+            "company": "Cloudpoint Solutions",
+            "period": "2023 – Present",
+            "description": "Lead testing for web applications using Cypress and Selenium, reducing defects by 30%. Automated tests for Laravel/Livewire systems and collaborated in Agile teams."
+        },
+        {
+            "role": "QA Tester",
+            "company": "Cloudpoint Solutions",
+            "period": "2021 – 2023",
+            "description": "Performed manual and automated testing for web and mobile apps using Postman and TestRail. Improved testing efficiency and supported Agile adoption."
+        }
+    ],
+    "skills": ["Cypress", "Selenium", "Postman", "TestRail", "Appium", "Jira", "Laravel/Livewire", "Agile Methodologies"],
+    "education": [
+        {
+            "degree": "Certified Software Tester (CSTE)",
+            "institution": "QAI Global Institute",
+            "year": "2022"
+        }
+    ],
+    "projects": [
+        {
+            "name": "Cypress Test Generator",
+            "description": "Developed a tool to generate automated Cypress test scripts for web applications, supporting dynamic elements and Livewire components."
+        },
+        {
+            "name": "Mobile App Testing",
+            "description": "Implemented automated testing for mobile applications using Appium, ensuring cross-platform compatibility."
+        }
+    ]
+}
 
 def crawl_website(url):
     """Crawl website using Playwright to handle dynamic content."""
@@ -21,7 +63,7 @@ def crawl_website(url):
         with sync_playwright() as p:
             browser = p.chromium.launch(headless=True)
             page = browser.new_page()
-            page.goto(url, wait_until='networkidle')
+            page.goto(url, wait_until='networkidle', timeout=30000)
             html = page.content()
             soup = BeautifulSoup(html, 'html.parser')
             browser.close()
@@ -105,7 +147,6 @@ def get_xpath(element):
 
 def validate_selector(selector, soup):
     """Validate selector uniqueness, escaping :visible for BeautifulSoup."""
-    # Escape :visible for BeautifulSoup parsing
     bs_selector = selector.replace(':visible', '\\:visible')
     try:
         matches = soup.select(bs_selector)
@@ -113,11 +154,10 @@ def validate_selector(selector, soup):
             return f"{selector}:nth-of-type(1)"
         return selector
     except Exception:
-        # Fallback to original selector if parsing fails
         return selector
 
 def get_best_selector(element, soup):
-    """Generate a compound selector with uniqueness validation, selective :visible."""
+    """Generate a compound selector with uniqueness validation."""
     selectors = []
     is_interactive = element['tag'] in ['input', 'button', 'form', 'select', 'textarea'] or element.get('role') in ['button', 'checkbox', 'radio']
     
@@ -148,8 +188,7 @@ def get_best_selector(element, soup):
             selector += ':visible'
         return validate_selector(selector, soup)
     if element.get('placeholder'):
-        escaped_placeholder = element.get('placeholder', '').replace("'", "\\'")
-        selector = f"[placeholder='{escaped_placeholder}']"
+        selector = f"[placeholder='{element['placeholder'].replace("'", "\\'")}]"
         if is_interactive:
             selector += ':visible'
         return validate_selector(selector, soup)
@@ -191,7 +230,7 @@ def generate_page_object(url_data):
 class {page_name}Page {{
   visit() {{
     cy.visit('{url_data['url']}', {{ retryOnStatusCodeFailure: true }});
-    cy.get('[wire\\\\:loading]').should('not.exist'); // Wait for Livewire
+    cy.get('[wire\\\\:loading]').should('not.exist');
   }}
 
   getElement(selector) {{
@@ -226,12 +265,11 @@ def generate_cypress_script(url_data, soup):
     elements = url_data['elements']
     page_title = url_data['page_title'].strip()
     domain = urlparse(url).netloc
-    page_name = page_title.replace(' ', '')
+    page_name = url_data['page_title'].replace(' ', '')
 
     script = f"""// {page_title} Test Suite for {domain}
-// Generated on: {url}
+// Generated on: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
 // Purpose: Smoke, E2E, authentication, and Livewire tests
-// Note: Uses page object model and fixtures for maintainability
 // Requires: npm install cypress mochawesome cypress-wait-until
 
 const {page_name}Page = require('./{page_name}Page');
@@ -243,12 +281,10 @@ describe('{page_title} - Automated Test Suite', () => {{
   const page = new {page_name}Page();
 
   before(() => {{
-    // Load test data from fixtures
     cy.fixture('test_data.json').as('testData');
   }});
 
   beforeEach(() => {{
-    // Visit page and wait for Livewire to load
     page.visit();
     cy.window().should('have.property', 'document.readyState', 'complete');
     cy.get('body').should('be.visible');
@@ -257,7 +293,6 @@ describe('{page_title} - Automated Test Suite', () => {{
 
   describe('Smoke Tests', () => {{
     it('loads the page successfully', () => {{
-      // Verifies page loads and is interactable
       cy.url().should('eq', '{url}');
       cy.title().should('not.be.empty');
       page.getElement('body').should('be.visible');
@@ -270,7 +305,6 @@ describe('{page_title} - Automated Test Suite', () => {{
 
   describe('End-to-End Tests', () => {{
 """
-    # Form submission test
     forms = [e for e in elements if e['tag'] == 'form']
     inputs = [e for e in elements if e['tag'] == 'input']
     buttons = [e for e in elements if e['tag'] == 'button' or e['role'] == 'button']
@@ -283,8 +317,6 @@ describe('{page_title} - Automated Test Suite', () => {{
 
         script += f"""
     it('completes a Livewire form submission', () => {{
-      // Fills and submits a form, verifying Livewire update
-      // Assumes success message or redirect on submission
       page.getElement('{form_selector}').should('exist').within(() => {{
 """
         for field in form_fields:
@@ -301,48 +333,39 @@ describe('{page_title} - Automated Test Suite', () => {{
             script += f"""        page.getElement('{submit_selector}').click();
       }});
       cy.wait('@livewireUpdate').its('response.statusCode').should('eq', 200);
-      cy.get('body').should('contain', 'success'); // Adjust based on response
+      cy.get('body').should('contain', 'success');
     }});
 """
 
-    # Authentication tests
     login_form = next((f for f in forms if any('email' in i.get('name', '').lower() or i['type'] == 'email' for i in inputs)), None)
     if login_form:
         script += f"""
     it('tests login with valid credentials', function() {{
-      // Tests successful login using fixture data
-      // Assumes redirect to dashboard on success
       page.login(this.testData.users[0].email, this.testData.users[0].password);
       cy.wait('@livewireUpdate');
-      cy.url().should('include', '/dashboard'); // Adjust based on redirect
-      cy.contains(this.testData.users[0].email); // Verify user data
+      cy.url().should('include', '/dashboard');
+      cy.contains(this.testData.users[0].email);
     }});
 
     it('tests login with invalid credentials', function() {{
-      // Tests login failure with invalid credentials
-      // Assumes error message is displayed
       page.login(this.testData.users[1].email, this.testData.users[1].password);
       cy.wait('@livewireUpdate');
-      cy.contains('Invalid credentials'); // Adjust based on error message
+      cy.contains('Invalid credentials');
     }});
 """
 
-    # Error handling test
     required_fields = [e for e in elements if e.get('required')]
     if required_fields:
         field = required_fields[0]
         field_selector = get_best_selector(field, soup)
         script += f"""
     it('validates required field', () => {{
-      // Tests form validation for required field
-      // Assumes error class or message on validation failure
       page.getElement('{field_selector}').clear();
       page.getElement('form').submit();
-      page.getElement('{field_selector}').should('have.class', 'error'); // Adjust based on validation
+      page.getElement('{field_selector}').should('have.class', 'error');
     }});
 """
 
-    # Livewire state test
     livewire_elements = [e for e in elements if e.get('wire:model')]
     if livewire_elements:
         element = livewire_elements[0]
@@ -350,8 +373,6 @@ describe('{page_title} - Automated Test Suite', () => {{
         test_value = generate_realistic_input_value(element)
         script += f"""
     it('verifies Livewire state update', () => {{
-      // Tests Livewire component state update
-      // Verifies input value persists after Livewire update
       page.getElement('{selector}').type('{test_value}', {{ delay: 50 }});
       cy.wait('@livewireUpdate');
       page.getElement('{selector}').should('have.value', '{test_value}');
@@ -367,6 +388,37 @@ describe('{page_title} - Automated Test Suite', () => {{
 @app.route('/')
 def home():
     return render_template('index.html')
+
+@app.route('/api/ask-ai', methods=['POST'])
+def ask_ai():
+    try:
+        data = request.get_json()
+        question = data.get('question')
+        
+        if not question:
+            return jsonify({'error': 'Question is required'}), 400
+        
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {
+                    "role": "system", 
+                    "content": f"You are Thirlo's professional QA assistant. Provide accurate, professional answers about Thirlo's skills, experience, education, and projects based on: {json.dumps(ai_knowledge_base, indent=2)}"
+                },
+                {"role": "user", "content": question}
+            ],
+            temperature=0.7
+        )
+        
+        return jsonify({
+            'answer': response.choices[0].message.content,
+            'sources': [
+                {"title": "Thirlo's Portfolio", "url": "https://yourportfolio.com"},
+                {"title": "LinkedIn Profile", "url": "https://linkedin.com/in/thirlo-fredericks"}
+            ]
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/api/generate', methods=['POST'])
 def generate_script():
@@ -384,25 +436,22 @@ def generate_script():
                 'details': url_data.get('error', 'The page might be using client-side rendering or blocking crawlers')
             }), 400
         
-        # Generate page object
+        soup = BeautifulSoup(requests.get(url, timeout=10).text, 'html.parser')
+        
         page_script = generate_page_object(url_data)
         page_filename = secure_filename(f"{url_data['page_title'].replace(' ', '')}Page.js")
         page_filepath = os.path.join(app.config['UPLOAD_FOLDER'], page_filename)
         with open(page_filepath, 'w') as f:
             f.write(page_script)
         
-        # Generate fixture
         fixture_data = generate_fixture_data()
         fixture_filename = 'test_data.json'
         fixture_filepath = os.path.join(app.config['UPLOAD_FOLDER'], fixture_filename)
         with open(fixture_filepath, 'w') as f:
             json.dump(fixture_data, f)
         
-        # Generate Cypress script
-        soup = BeautifulSoup(requests.get(url).text, 'html.parser')  # For selector validation
         script = generate_cypress_script(url_data, soup)
         
-        # Lint the script
         temp_filename = f"temp_{uuid.uuid4()}.js"
         temp_filepath = os.path.join(app.config['UPLOAD_FOLDER'], temp_filename)
         with open(temp_filepath, 'w') as f:
@@ -412,7 +461,6 @@ def generate_script():
             print(f"Linting errors: {result.stderr}")
         os.remove(temp_filepath)
         
-        # Save the script
         domain = urlparse(url).netloc.replace('.', '_')
         filename = secure_filename(f"cypress_test_{domain}.js")
         filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
@@ -445,4 +493,5 @@ def get_test_types():
     })
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    port = int(os.environ.get('PORT', 5003))
+    app.run(host='0.0.0.0', port=port, debug=True)
