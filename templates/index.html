@@ -1,16 +1,15 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <meta name="description" content="Portfolio of Thirlo, a QA Engineer specializing in test automation with Cypress, Selenium, and more.">
     <title>Thirlo - QA Engineer & AI Portfolio</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.2/axios.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.2/ace.js"></script>
-    <script src="https://unpkg.com/feather-icons"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.2/axios.min.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.2/ace.js"></script>
+    <script defer src="https://unpkg.com/feather-icons"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* Existing styles remain unchanged */
         :root {
             --background: #F5F5F7;
             --card: #FFFFFF;
@@ -42,12 +41,14 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'San Francisco', 'Helvetica Neue', Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Helvetica Neue', Arial, sans-serif;
             background-color: var(--background);
             color: var(--text);
             line-height: 1.6;
             overflow-x: hidden;
             transition: background-color 0.3s ease, color 0.3s ease;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
         .container {
@@ -66,6 +67,7 @@
             flex-direction: column;
             gap: 0.5rem;
             z-index: 1000;
+            transition: transform 0.3s ease;
         }
 
         .sidebar-header {
@@ -97,11 +99,17 @@
             display: flex;
             align-items: center;
             gap: 0.75rem;
+            min-height: 44px;
         }
 
         .sidebar a:hover, .sidebar a.active {
             color: var(--text);
             background-color: var(--highlight);
+        }
+
+        .sidebar a:focus {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
         }
 
         .sidebar a i {
@@ -117,6 +125,8 @@
             z-index: 1100;
             cursor: pointer;
             padding: 0.5rem;
+            min-height: 44px;
+            min-width: 44px;
         }
 
         .hamburger i {
@@ -129,7 +139,7 @@
             display: none;
             position: fixed;
             top: 0;
-            left: -100%;
+            left: 0;
             width: 100%;
             height: 100vh;
             background-color: var(--card);
@@ -137,11 +147,13 @@
             flex-direction: column;
             gap: 1rem;
             z-index: 1050;
-            transition: left 0.3s ease;
+            transition: transform 0.3s ease;
+            transform: translateX(-100%);
+            overflow-y: auto;
         }
 
         .mobile-menu.active {
-            left: 0;
+            transform: translateX(0);
         }
 
         .mobile-menu a {
@@ -154,6 +166,7 @@
             display: flex;
             align-items: center;
             gap: 0.75rem;
+            min-height: 44px;
         }
 
         .mobile-menu a:hover, .mobile-menu a.active {
@@ -161,9 +174,30 @@
             background-color: var(--border);
         }
 
+        .mobile-menu a:focus {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
+        }
+
         .mobile-menu i {
             width: 20px;
             height: 20px;
+        }
+
+        .mobile-menu-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            min-height: 44px;
+            min-width: 44px;
+        }
+
+        .mobile-menu-close i {
+            width: 24px;
+            height: 24px;
+            color: var(--text);
         }
 
         .theme-toggle {
@@ -180,6 +214,9 @@
             padding: 0 4px;
             z-index: 1000;
             transition: background 0.3s ease;
+            role="switch"
+            aria-checked="false"
+            tabindex="0"
         }
 
         .theme-toggle::before {
@@ -196,6 +233,10 @@
         [data-theme="dark"] .theme-toggle::before {
             transform: translateX(30px);
             background: #FFD60A;
+        }
+
+        [data-theme="dark"] .theme-toggle {
+            aria-checked="true";
         }
 
         .theme-toggle .icon {
@@ -275,6 +316,7 @@
             overflow-y: auto;
             margin-bottom: 1.5rem;
             padding-right: 0.5rem;
+            -webkit-overflow-scrolling: touch;
         }
 
         .message {
@@ -308,6 +350,7 @@
             border-radius: 9999px;
             font-size: 0.75rem;
             font-weight: 500;
+            display: inline-block;
         }
 
         .message-content {
@@ -340,12 +383,13 @@
             color: var(--text);
             font-size: 1rem;
             transition: all 0.2s ease;
+            min-height: 44px;
         }
 
         .search-input:focus {
-            outline: none;
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
             border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
         }
 
         .search-button {
@@ -360,6 +404,7 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
+            min-height: 44px;
         }
 
         .search-button:hover {
@@ -384,6 +429,7 @@
             border-radius: 0.75rem;
             object-fit: cover;
             border: 2px solid var(--accent);
+            loading="lazy";
         }
 
         .profile-info h1 {
@@ -413,11 +459,20 @@
             font-size: 0.9rem;
             font-weight: 500;
             transition: all 0.2s ease;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .social-links a:hover {
             background-color: var(--accent);
             color: #FFFFFF;
+        }
+
+        .social-links a:focus {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
         }
 
         .about-section p {
@@ -440,6 +495,7 @@
 
         .form-group {
             margin-bottom: 1.5rem;
+            position: relative;
         }
 
         .form-group label {
@@ -462,9 +518,20 @@
         }
 
         input[type="text"]:focus {
-            outline: none;
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
             border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+        }
+
+        input[type="text"].error {
+            border-color: var(--error);
+        }
+
+        .form-error {
+            color: var(--error);
+            font-size: 0.85rem;
+            margin-top: 0.25rem;
+            display: none;
         }
 
         .editor-container {
@@ -524,6 +591,11 @@
             gap: 0.4rem;
             font-size: 0.95rem;
             min-height: 44px;
+        }
+
+        button:focus {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
         }
 
         button:disabled {
@@ -600,27 +672,10 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        @media (max-width: 768px) {
-            .container {
-                flex-direction: column;
-            }
-
+        /* Unified media query for tablet and mobile: hide sidebar, show hamburger and mobile-menu */
+        @media (max-width: 1024px) {
             .sidebar {
-                width: 100%;
-                height: auto;
-                position: relative;
-                border-right: none;
-                border-bottom: 1px solid var(--border);
-            }
-            
-            .main-content {
-                margin-left: 0;
-                width: 100%;
-            }
-            
-            .about-container {
-                height: auto;
-                min-height: calc(100vh - 8rem);
+                display: none;
             }
 
             .hamburger {
@@ -629,6 +684,26 @@
 
             .mobile-menu {
                 display: flex;
+            }
+
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .main-content {
+                padding: 1rem;
+            }
+
+            .about-container {
+                height: auto;
+                min-height: calc(100vh - 8rem);
             }
 
             section.active {
@@ -762,11 +837,6 @@
                 padding: 0.6rem 0.8rem;
             }
 
-            button {
-                font-size: 0.85rem;
-                padding: 0.4rem 0.6rem;
-            }
-
             .editor-container #editor {
                 height: 300px;
             }
@@ -776,39 +846,74 @@
                 padding: 0.5rem 0.75rem;
             }
         }
+
+        @media (max-width: 375px) {
+            .hamburger {
+                top: 0.5rem;
+                left: 0.5rem;
+            }
+
+            .theme-toggle {
+                top: 0.5rem;
+                right: 0.5rem;
+                width: 40px;
+                height: 20px;
+            }
+
+            .theme-toggle::before {
+                width: 14px;
+                height: 14px;
+            }
+
+            [data-theme="dark"] .theme-toggle::before {
+                transform: translateX(20px);
+            }
+
+            .theme-toggle .icon {
+                font-size: 10px;
+            }
+
+            .search-button, button {
+                padding: 0.4rem 0.6rem;
+                font-size: 0.8rem;
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="hamburger" onclick="toggleMobileMenu()">
-        <i data-feather="menu"></i>
+    <div class="hamburger" onclick="toggleMobileMenu()" aria-label="Open navigation menu">
+        <i data-feather="menu" aria-hidden="true"></i>
     </div>
 
-    <nav class="sidebar">
+    <nav class="sidebar" aria-label="Main navigation">
         <div class="sidebar-header">
+            <h1><i data-feather="user" aria-hidden="true"></i>Thirlo's Portfolio</h1>
         </div>
-        <a href="#about-me" class="nav-link active"><i data-feather="user"></i>About Me</a>
-        <a href="#profile" class="nav-link"><i data-feather="file-text"></i>Profile</a>
-        <a href="#cypress" class="nav-link"><i data-feather="code"></i>Cypress Generator</a>
+        <a href="#about-me" class="nav-link active" aria-current="page"><i data-feather="user" aria-hidden="true"></i>About Me</a>
+        <a href="#profile" class="nav-link"><i data-feather="file-text" aria-hidden="true"></i>Profile</a>
+        <a href="#cypress" class="nav-link"><i data-feather="code" aria-hidden="true"></i>Cypress Generator</a>
     </nav>
 
-    <nav class="mobile-menu">
-        <a href="#about-me" class="nav-link active"><i data-feather="user"></i>About Me</a>
-        <a href="#profile" class="nav-link"><i data-feather="file-text"></i>Profile</a>
-        <a href="#cypress" class="nav-link"><i data-feather="code"></i>Cypress Generator</a>
+    <nav class="mobile-menu" aria-label="Mobile navigation">
+        <div class="mobile-menu-close" onclick="toggleMobileMenu()" aria-label="Close navigation menu">
+            <i data-feather="x" aria-hidden="true"></i>
+        </div>
+        <a href="#about-me" class="nav-link active" aria-current="page"><i data-feather="user" aria-hidden="true"></i>About Me</a>
+        <a href="#profile" class="nav-link"><i data-feather="file-text" aria-hidden="true"></i>Profile</a>
+        <a href="#cypress" class="nav-link"><i data-feather="code" aria-hidden="true"></i>Cypress Generator</a>
     </nav>
 
-    <div class="theme-toggle" onclick="toggleTheme()">
-        <span class="icon sun">☀</span>
-        <span class="icon moon">☾</span>
+    <div class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle between light and dark theme">
+        <span class="icon sun" aria-hidden="true">☀</span>
+        <span class="icon moon" aria-hidden="true">☾</span>
     </div>
 
     <div class="container">
-        <main class="main-content">
-            <!-- About Me Section (Replaces AI Assistant) -->
-            <section id="about-me" class="section active">
+        <main class="main-content" role="main">
+            <section id="about-me" class="section active" aria-labelledby="about-me-heading">
                 <div class="about-container">
                     <div class="about-header">
-                        <h2>About Me</h2>
+                        <h2 id="about-me-heading">About Me</h2>
                         <p>Ask my AI assistant about my professional background, skills, or achievements.</p>
                     </div>
                     
@@ -832,27 +937,26 @@
                     </div>
                     
                     <div class="input-container">
-                        <input type="text" class="search-input" id="ai-question" placeholder="Ask about Thirlo's experience or skills...">
-                        <button class="search-button" id="ask-button" onclick="askAI()">
+                        <input type="text" class="search-input" id="ai-question" placeholder="Ask about Thirlo's experience or skills..." aria-label="Ask about Thirlo's experience or skills">
+                        <button class="search-button" id="ask-button" onclick="askAI()" aria-label="Submit question to AI assistant">
                             <span>Ask</span>
-                            <i data-feather="send"></i>
+                            <i data-feather="send" aria-hidden="true"></i>
                         </button>
                     </div>
                 </div>
             </section>
             
-            <!-- Profile Section (Renamed from About) -->
-            <section id="profile" class="section">
+            <section id="profile" class="section" aria-labelledby="profile-heading">
                 <div class="section-content">
                     <div class="profile-header">
-                        <img src="static/images/IMG_0069.jpg" alt="Thirlo" class="profile-image">
+                        <img src="static/images/IMG_0069.webp" alt="Portrait of Thirlo" class="profile-image">
                         <div class="profile-info">
-                            <h1>Thirlo</h1>
+                            <h1 id="profile-heading">Thirlo</h1>
                             <h2>Intermediate Tester</h2>
                             <div class="social-links">
-                                <a href="https://www.linkedin.com/in/thirlo-fredericks-80b27a136/" target="_blank">LinkedIn</a>
-                                <a href="https://github.com/Thirlo401/" target="_blank">GitHub</a>
-                                <a href="/files/resume-cv.pdf" target="_blank">Download CV</a>
+                                <a href="https://www.linkedin.com/in/thirlo-fredericks-80b27a136/" target="_blank" aria-label="Visit Thirlo's LinkedIn profile">LinkedIn</a>
+                                <a href="https://github.com/Thirlo401/" target="_blank" aria-label="Visit Thirlo's GitHub profile">GitHub</a>
+                                <a href="/files/resume-cv.pdf" target="_blank" aria-label="Download Thirlo's CV">Download CV</a>
                             </div>
                         </div>
                     </div>
@@ -873,18 +977,18 @@
                 </div>
             </section>
             
-            <!-- Cypress Tool Section -->
-            <section id="cypress" class="section">
+            <section id="cypress" class="section" aria-labelledby="cypress-heading">
                 <div class="section-content tool-section">
-                    <h2>Cypress Test Generator</h2>
+                    <h2 id="cypress-heading">Cypress Test Generator</h2>
                     <p>Generate comprehensive Cypress test scripts for any web application instantly. Simply enter the URL below and let the magic happen.</p>
                     
                     <div class="form-group">
                         <label for="url">Website URL</label>
-                        <input type="text" id="url" placeholder="https://example.com">
+                        <input type="text" id="url" placeholder="https://example.com" aria-label="Enter website URL for Cypress test generation">
+                        <span class="form-error" id="url-error">Please enter a valid URL (e.g., https://example.com).</span>
                     </div>
                     
-                    <button onclick="generateScript()" id="generateBtn">
+                    <button onclick="generateScript()" id="generateBtn" aria-label="Generate Cypress test script">
                         <span>Generate Test Script</span>
                     </button>
 
@@ -894,18 +998,18 @@
                             <div class="editor-dot"></div>
                             <div class="editor-dot"></div>
                         </div>
-                        <div id="editor"></div>
+                        <div id="editor" role="region" aria-label="Code editor for Cypress test script"></div>
                         <div class="action-buttons">
-                            <button onclick="copyToClipboard()" class="copy-button">
+                            <button onclick="copyToClipboard()" class="copy-button" aria-label="Copy Cypress test script to clipboard">
                                 <span>Copy to Clipboard</span>
                             </button>
-                            <button onclick="downloadScript()" id="downloadBtn">
+                            <button onclick="downloadScript()" id="downloadBtn" aria-label="Download Cypress test script">
                                 <span>Download Script</span>
                             </button>
                         </div>
                     </div>
                     
-                    <div id="status" class="status" style="display: none;"></div>
+                    <div id="status" class="status" role="alert" style="display: none;"></div>
                 </div>
             </section>
         </main>
@@ -930,6 +1034,7 @@
             
             const navLinks = document.querySelectorAll('.nav-link');
             const sections = document.querySelectorAll('.section');
+            const mobileMenu = document.querySelector('.mobile-menu');
             
             navLinks.forEach(link => {
                 link.addEventListener('click', (e) => {
@@ -946,7 +1051,10 @@
                         }
                     });
 
-                    document.querySelector('.mobile-menu').classList.remove('active');
+                    // Collapse mobile menu when a link is clicked
+                    if (window.innerWidth <= 1024) {
+                        mobileMenu.classList.remove('active');
+                    }
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                 });
             });
@@ -954,30 +1062,45 @@
             if (localStorage.getItem('theme') === 'dark') {
                 document.documentElement.setAttribute('data-theme', 'dark');
             }
+
+            document.querySelector('.theme-toggle').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    toggleTheme();
+                }
+            });
         });
         
         function toggleTheme() {
             const currentTheme = document.documentElement.getAttribute('data-theme');
+            const themeToggle = document.querySelector('.theme-toggle');
             if (currentTheme === 'dark') {
                 document.documentElement.removeAttribute('data-theme');
                 localStorage.setItem('theme', 'light');
+                themeToggle.setAttribute('aria-checked', 'false');
             } else {
                 document.documentElement.setAttribute('data-theme', 'dark');
                 localStorage.setItem('theme', 'dark');
+                themeToggle.setAttribute('aria-checked', 'true');
             }
         }
 
         function toggleMobileMenu() {
-            document.querySelector('.mobile-menu').classList.toggle('active');
+            const mobileMenu = document.querySelector('.mobile-menu');
+            mobileMenu.classList.toggle('active');
         }
         
         async function askAI() {
-            const question = document.getElementById('ai-question').value;
+            const questionInput = document.getElementById('ai-question');
+            const question = questionInput.value.trim();
             const button = document.getElementById('ask-button');
             const chat = document.getElementById('chat-container');
             
-            if (!question) return;
+            if (!question) {
+                questionInput.classList.add('error');
+                return;
+            }
             
+            questionInput.classList.remove('error');
             chat.innerHTML += `
                 <div class="message message-user">
                     <div class="message-header">
@@ -990,7 +1113,7 @@
             `;
             
             button.disabled = true;
-            button.innerHTML = '<span>Thinking</span><i data-feather="loader"></i>';
+            button.innerHTML = '<span>Thinking</span><i data-feather="loader" aria-hidden="true"></i>';
             feather.replace();
             
             chat.scrollTop = chat.scrollHeight;
@@ -1022,7 +1145,7 @@
                     </div>
                 `;
                 
-                document.getElementById('ai-question').value = '';
+                questionInput.value = '';
                 
             } catch (error) {
                 console.error('AI error:', error);
@@ -1039,7 +1162,7 @@
                 `;
             } finally {
                 button.disabled = false;
-                button.innerHTML = '<span>Ask</span><i data-feather="send"></i>';
+                button.innerHTML = '<span>Ask</span><i data-feather="send" aria-hidden="true"></i>';
                 feather.replace();
                 chat.scrollTop = chat.scrollHeight;
             }
@@ -1053,13 +1176,21 @@
         
         async function generateScript() {
             const urlInput = document.getElementById('url');
+            const urlError = document.getElementById('url-error');
             const generateBtn = document.getElementById('generateBtn');
             const editorContainer = document.getElementById('editorContainer');
             
-            if (!urlInput.value) {
+            const url = urlInput.value.trim();
+            const urlPattern = /^https?:\/\/[^\s/$.?#].[^\s]*$/;
+            if (!url || !urlPattern.test(url)) {
+                urlInput.classList.add('error');
+                urlError.style.display = 'block';
                 showStatus('Please enter a valid URL', 'error');
                 return;
             }
+
+            urlInput.classList.remove('error');
+            urlError.style.display = 'none';
 
             generateBtn.disabled = true;
             generateBtn.innerHTML = '<span>Generating</span><span class="loading-spinner"></span>';
@@ -1067,7 +1198,7 @@
 
             try {
                 const response = await axios.post('/api/generate', {
-                    url: urlInput.value
+                    url: url
                 });
 
                 editorContainer.style.display = 'block';
@@ -1111,6 +1242,9 @@
             statusDiv.textContent = message;
             statusDiv.style.display = 'block';
             statusDiv.className = `status ${type}`;
+            setTimeout(() => {
+                statusDiv.style.display = 'none';
+            }, 5000);
         }
     </script>
 </body>
